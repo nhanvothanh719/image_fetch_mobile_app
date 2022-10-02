@@ -1,8 +1,11 @@
 package com.example.imageapp;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -11,6 +14,9 @@ import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.Button;
@@ -29,7 +35,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView imageViewImage;
+    ImageView imageViewImage, imageViewNoImage;
     Button buttonBackward, buttonForward, buttonAddImageURL;
     EditText editTextImageURL;
     ImageButton imageButtonCamera;
@@ -44,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         imageViewImage = (ImageView) findViewById(R.id.imageViewImage);
+        imageViewNoImage = (ImageView) findViewById(R.id.imageViewNoImage);
 
         editTextImageURL = (EditText) findViewById(R.id.editTextImageURL);
 
@@ -60,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = databaseHelper.getAllImages();
         if(cursor != null && cursor.moveToFirst()) {
             cursor.moveToLast();
+            Log.d("Position:", String.valueOf(cursor.getCount()));
             Cursor sub_cursor = cursor;
             checkLastImg(sub_cursor);
             checkFirstImg(sub_cursor);
@@ -70,6 +78,11 @@ public class MainActivity extends AppCompatActivity {
                     .centerCrop()
                     .override(320, 320)
                     .into(imageViewImage);
+        } else {
+            buttonBackward.setVisibility(View.GONE);
+            buttonForward.setVisibility(View.GONE);
+            imageViewImage.setVisibility(View.GONE);
+            imageViewNoImage.setVisibility(View.VISIBLE);
         }
 
         buttonBackward.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkFirstImg(Cursor cursor) {
-        if(cursor.moveToPrevious() == false) {
+        if(!cursor.moveToPrevious()) {
             buttonBackward.setVisibility(View.GONE);
         } else {
             buttonBackward.setVisibility(View.VISIBLE);
@@ -145,10 +158,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkLastImg(Cursor cursor) {
-        if(cursor.moveToNext() == false) {
+        if(!cursor.moveToNext()) {
             buttonForward.setVisibility(View.GONE);
         } else {
             buttonForward.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        MenuInflater inflater = getMenuInflater(); //Inflate menu layout
+        inflater.inflate(R.menu.custom_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == R.id.deleteAll) {
+            displayConfirmDialog();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    void displayConfirmDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete all uploaded images");
+        builder.setMessage("Are you sure to you want to delete all images?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                DatabaseHelper myDB = new DatabaseHelper(MainActivity.this);
+                databaseHelper.deleteAllImages();
+                //Redirect to Main activity --> Refresh activity
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish(); //Close current activity and get to Main activity
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        builder.create().show();
     }
 }

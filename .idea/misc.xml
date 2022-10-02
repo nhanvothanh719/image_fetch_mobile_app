@@ -4,9 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/ic_broken_image.xml" value="0.112" />
+        <entry key="app/src/main/res/drawable/ic_delete.xml" value="0.1085" />
+        <entry key="app/src/main/res/drawable/ic_image.xml" value="0.1085" />
         <entry key="app/src/main/res/drawable/ic_image_search.xml" value="0.112" />
         <entry key="app/src/main/res/layout/activity_camera.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23958333333333334" />
+        <entry key="app/src/main/res/menu/custom_menu.xml" value="0.17239583333333333" />
       </map>
     </option>
   </component>
