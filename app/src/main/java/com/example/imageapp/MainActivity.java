@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
         Cursor cursor = databaseHelper.getAllImages();
         if(cursor.getCount() != 0) {
-            cursor.moveToFirst();
+            cursor.moveToLast();
             Glide.with(getApplicationContext())
                     .load(cursor.getString(1))
                     .placeholder(R.drawable.ic_image_search)
