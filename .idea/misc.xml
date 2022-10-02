@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable/ic_broken_image.xml" value="0.112" />
         <entry key="app/src/main/res/drawable/ic_image_search.xml" value="0.112" />
+        <entry key="app/src/main/res/layout/activity_camera.xml" value="0.2265625" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.23958333333333334" />
       </map>
     </option>
