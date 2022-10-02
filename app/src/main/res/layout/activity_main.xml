@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/imageViewImage"
         android:layout_width="320dp"
-        android:layout_height="374dp"
+        android:layout_height="320dp"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,7 +63,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/buttonAddLink"
+        android:id="@+id/buttonAddImageURL"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
