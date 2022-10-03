@@ -67,10 +67,13 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = databaseHelper.getAllImages();
         if(cursor != null && cursor.moveToFirst()) {
             cursor.moveToLast();
-            Log.d("Position:", String.valueOf(cursor.getCount()));
-            Cursor sub_cursor = cursor;
-            checkLastImg(sub_cursor);
-            checkFirstImg(sub_cursor);
+            if(cursor.getCount() == 1) {
+                buttonBackward.setVisibility(View.GONE);
+                buttonForward.setVisibility(View.GONE);
+            }
+            if(cursor.getPosition() == cursor.getCount() - 1) {
+                buttonForward.setVisibility(View.GONE);
+            }
             Glide.with(getApplicationContext())
                     .load(cursor.getString(1))
                     .placeholder(R.drawable.ic_image_search)
@@ -89,13 +92,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 cursor.moveToPrevious();
-                Glide.with(getApplicationContext())
-                        .load(cursor.getString(1))
-                        .placeholder(R.drawable.ic_image_search)
-                        .error(R.drawable.ic_broken_image)
-                        .centerCrop()
-                        .override(320, 320)
-                        .into(imageViewImage);
+                int columnIndex = cursor.getColumnIndex("address");
+                if(columnIndex > 0) {
+                    Glide.with(getApplicationContext())
+                            .load(cursor.getString(columnIndex))
+                            .placeholder(R.drawable.ic_image_search)
+                            .error(R.drawable.ic_broken_image)
+                            .centerCrop()
+                            .override(320, 320)
+                            .into(imageViewImage);
+                }
                 checkFirstImg(cursor);
                 checkLastImg(cursor);
             }
