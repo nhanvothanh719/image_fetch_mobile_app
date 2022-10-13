@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,14 +131,18 @@ public class MainActivity extends AppCompatActivity {
 
                 String inputImageURL = editTextImageURL.getText().toString().trim();
 
-                if(checkImageURLExist(inputImageURL) == false) {
-                    Toast.makeText(MainActivity.this, "Fail to add image URL", Toast.LENGTH_LONG).show();
+                if(URLUtil.isValidUrl(inputImageURL) == false) {
+                    Toast.makeText(MainActivity.this, "Input is not a valid URL", Toast.LENGTH_LONG).show();
                 } else {
-                    databaseHelper.addImage(inputImageURL);
-                    editTextImageURL.setText("");
-                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    Toast.makeText(MainActivity.this, "Add image URL successfully", Toast.LENGTH_LONG).show();
+                    if(checkURLHasImage(inputImageURL) == false) {
+                        Toast.makeText(MainActivity.this, "Fail to add image URL", Toast.LENGTH_LONG).show();
+                    } else {
+                        editTextImageURL.setText("");
+                        databaseHelper.addImage(inputImageURL);
+                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        Toast.makeText(MainActivity.this, "Add image URL successfully", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -151,8 +156,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean checkImageURLExist(String inputImageURL) {
-        return URLUtil.isValidUrl(inputImageURL);
+    private boolean checkURLHasImage(String inputImageURL) {
+        String mimeType = URLConnection.guessContentTypeFromName(inputImageURL);
+        if(mimeType != null && mimeType.startsWith("image")) {
+            return true;
+        }
+        return false;
     }
 
     private void checkFirstImg(Cursor cursor) {

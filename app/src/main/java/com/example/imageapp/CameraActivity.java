@@ -19,6 +19,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -111,12 +112,13 @@ public class CameraActivity extends AppCompatActivity {
         if (!dir.exists()){
             dir.mkdir();
         }
-        File file = new File(dir,System.currentTimeMillis()+".jpg");
+        File file = new File(dir,System.currentTimeMillis()+".jpeg");
         try {
             outputStream = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        Log.d("File: ", String.valueOf(file));
         if(bitmap != null) {
             bitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
             Toast.makeText(CameraActivity.this,"Save image successfully",Toast.LENGTH_LONG).show();
@@ -133,5 +135,22 @@ public class CameraActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //Display geographical place
+        try {
+            ExifInterface exif = new ExifInterface("/storage/emulated/0/SaveImage/1665307456424.jpeg");
+            float[] latLong = new float[2];
+            boolean hasLatLong = exif.getLatLong(latLong);
+            if (hasLatLong) {
+                Log.d("Latitude: ", String.valueOf(latLong[0]));
+                Log.d("Longitude: ", String.valueOf(latLong[1]));
+                Toast.makeText(CameraActivity.this,"Latitude: " + String.valueOf(latLong[0]),Toast.LENGTH_LONG).show();
+            }
+            Log.d("Latitude: ", String.valueOf(latLong[0]));
+            Log.d("Longitude: ", String.valueOf(latLong[1]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //
     }
 }
