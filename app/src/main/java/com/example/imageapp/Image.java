@@ -9,17 +9,9 @@ public class Image {
         this.address = address;
     }
 
-    public int getId() {
-        return _id;
-    }
-    public void setId(int _id) {
-        this._id = _id;
-    }
+    public int getId() { return _id; }
+    public void setId(int _id) { this._id = _id; }
 
-    public String getAddress() {
-        return address;
-    }
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 }

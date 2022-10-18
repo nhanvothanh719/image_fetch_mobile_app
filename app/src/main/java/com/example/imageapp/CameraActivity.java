@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -19,6 +20,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,21 +36,30 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+//import com.google.android.gms.location.FusedLocationProviderClient;
+//import com.google.android.gms.location.LocationServices;
+//import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Locale;
 
-public class CameraActivity extends AppCompatActivity {
-
+public class CameraActivity extends AppCompatActivity implements LocationListener {
     ImageButton imageButtonTakePicture;
     ImageView imageViewCamera;
 
     private static int REQUEST_CODE_CAMERA = 1;
     private static int REQUEST_CODE_SAVE_IMAGE = 100;
+    private final int REQUEST_CODE_GET_LOCATION = 123;
 
     OutputStream outputStream;
+
+    LocationManager locationManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +68,14 @@ public class CameraActivity extends AppCompatActivity {
 
         imageButtonTakePicture = (ImageButton) findViewById(R.id.imageButtonTakePicture);
         imageViewCamera = (ImageView) findViewById(R.id.imageViewCamera);
+
+        if (ContextCompat.checkSelfPermission(CameraActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(CameraActivity.this, new String[] {
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            }, REQUEST_CODE_GET_LOCATION);
+        }
 
         imageButtonTakePicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +86,7 @@ public class CameraActivity extends AppCompatActivity {
                 activityResultLauncher.launch(intent);
             }
         });
+        getCurrentLocation();
     }
 
     //Replace for startActivityForResult
@@ -102,7 +125,6 @@ public class CameraActivity extends AppCompatActivity {
 //    }
 
     private void askPermission() {
-
         ActivityCompat.requestPermissions(CameraActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_CODE_SAVE_IMAGE);
 
     }
@@ -136,21 +158,36 @@ public class CameraActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         //Display geographical place
+        getCurrentLocation();
+    }
+
+    @SuppressLint("MissingPermission")
+    public void getCurrentLocation() {
         try {
-            ExifInterface exif = new ExifInterface("/storage/emulated/0/SaveImage/1665307456424.jpeg");
-            float[] latLong = new float[2];
-            boolean hasLatLong = exif.getLatLong(latLong);
-            if (hasLatLong) {
-                Log.d("Latitude: ", String.valueOf(latLong[0]));
-                Log.d("Longitude: ", String.valueOf(latLong[1]));
-                Toast.makeText(CameraActivity.this,"Latitude: " + String.valueOf(latLong[0]),Toast.LENGTH_LONG).show();
-            }
-            Log.d("Latitude: ", String.valueOf(latLong[0]));
-            Log.d("Longitude: ", String.valueOf(latLong[1]));
-        } catch (IOException e) {
+            locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, CameraActivity.this);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-        //
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        Toast.makeText(this, "Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        //LocationListener.super.onStatusChanged(provider, status, extras);
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        //LocationListener.super.onProviderEnabled(provider);
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        //LocationListener.super.onProviderDisabled(provider);
     }
 }

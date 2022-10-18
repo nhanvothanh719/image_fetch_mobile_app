@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-
     private Context context;
 
     public static final String DATABASE_NAME = "imageURL.db";

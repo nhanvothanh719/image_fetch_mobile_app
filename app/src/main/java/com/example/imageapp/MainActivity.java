@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
     ImageView imageViewImage, imageViewNoImage;
     Button buttonBackward, buttonForward, buttonAddImageURL;
     EditText editTextImageURL;
